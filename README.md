@@ -1,2 +1,2 @@
-# Hlib
-HTTP Library 
+# Hlib Docs
+
