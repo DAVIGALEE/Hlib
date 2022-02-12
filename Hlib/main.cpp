@@ -3,18 +3,13 @@
 //
 
 #include <iostream>
-#include "headers/Hlib.h"
+#include "Hlib.h"
 
-class Niko {
-
-public:
-
-     void davit();
-};
+using namespace Hlib;
 
 int main() {
 
-    Hlib::Sock app(Hlib::IPv4, SOCK_STREAM, IPPROTO_TCP, 8080);
+    Sock app(Hlib::IPv4, SOCK_STREAM, IPPROTO_TCP, 8080);
 
     return 0;
 }
