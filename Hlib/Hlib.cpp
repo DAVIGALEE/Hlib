@@ -9,6 +9,11 @@
 
 //HTTP REQUEST, RESPONSE
 
+// TODO 
+// Init func (Sock() constructor)
+// CreateServer func (createServer(IPv, type, protocol))
+// Listen func (listen(port))
+// Route func (Get(path, func res, req), Put(path, func res, req), Post(path, func res, req), Delete(path, func res, req))
 
 // create socket SOCK() func
 Hlib::Sock::Sock(Hlib::IPv _ipv, int service, int protocol, int port) {
