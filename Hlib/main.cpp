@@ -4,12 +4,19 @@
 
 #include <iostream>
 #include "Hlib.h"
-
+#include <string>
+#include <vector>
 using namespace Hlib;
 
 int main() {
+    HTTP app;
 
-    Sock app(Hlib::IPv4, SOCK_STREAM, IPPROTO_TCP, 8080);
+    app.createServer(IPv4, SOCK_STREAM, IPPROTO_TCP, 8080);
+
+    // app.get('/users', callbacks);
+    // app.post('/users', callbacks);
+
+    app.Listen();
 
     return 0;
 }
