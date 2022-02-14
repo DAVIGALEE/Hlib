@@ -1,6 +1,5 @@
 #include <iostream>
 #include "Hlib.h"
-#define EMPTY ""
 
 int Hlib::HTTP::createServer(Hlib::IPv _ipv, int type, int protocol, int port) {
     if (_ipv == IPv4) {
@@ -22,7 +21,7 @@ int Hlib::HTTP::createServer(Hlib::IPv _ipv, int type, int protocol, int port) {
     }
     return 1;
 }
-
+// Get() func
 void Hlib::HTTP::Get(std::string path) {
     routers[path].push_back("Method: GET");
     routers[path].push_back("<h1> hello </h1>");
@@ -76,7 +75,6 @@ void Hlib::HTTP::Listen() {
 void Hlib::HTTP::recvHTTP(int sock, char *buff, size_t len, int flag) {
     c_recv = recv( sock , buff, len, flag);
     parseData(buff);
-   // printf("%s\n",buff);
 }
 
 int Hlib::HTTP::recvHTTP() {
@@ -99,12 +97,11 @@ void Hlib::HTTP::sendHTTP(int sock, char *buff, size_t len, int flag) {
     }
 
 }
-  //  printf("sent -> %s\n", buff);
-
 
 int Hlib::HTTP::sendHTTP() {
     return c_send;
 }
+// shutdown socket
 void Hlib::HTTP::ShutDown(int c_sock,  int s_sock, int exit_code) {
     c_send = shutdown(c_sock, exit_code);
     if(c_send == SOCKET_ERROR) {
@@ -116,7 +113,7 @@ void Hlib::HTTP::ShutDown(int c_sock,  int s_sock, int exit_code) {
     closesocket(s_sock);
     WSACleanup();
 }
-
+// parse buff
 void Hlib::HTTP::parseData(std::string buff) {
     for (int i = 0; i < buff[i]; i++){
         if(buff[i] == '\n') {
@@ -136,13 +133,14 @@ void Hlib::HTTP::parseData(std::string buff) {
             str = EMPTY;
         }
     }
-//    std::cout << dataArray[0] << " " << dataArray[1] << " " << dataArray[2] << buff <<std::endl;
+
     method = dataArray[0];
     router = dataArray[1];
     fav = false;
 
     data = EMPTY;
 }
+// check routers 
 void Hlib::HTTP::Checker(std::string router){
    if(routers.find(router) == routers.end()){
        printf("404 NOT FOUND \n");
