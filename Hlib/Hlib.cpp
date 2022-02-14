@@ -23,8 +23,9 @@ int Hlib::HTTP::createServer(Hlib::IPv _ipv, int type, int protocol, int port) {
     return 1;
 }
 
-void Hlib::HTTP::Get(std::string path, void callBack()) {
-
+void Hlib::HTTP::Get(std::string path) {
+    routers[path].push_back("Method: GET");
+    routers[path].push_back("<h1> hello </h1>");
 }
 
 void Hlib::HTTP::Listen() {
@@ -34,6 +35,7 @@ void Hlib::HTTP::Listen() {
     c_socket = INVALID_SOCKET;
     // socket is ready to listen incoming connections
     run = true;
+    fav = false;
 
     while (run)
     {
@@ -48,8 +50,12 @@ void Hlib::HTTP::Listen() {
         recvHTTP(new_socket, buffer, 30000);
         if (c_recv > 0 ) {
             //sending response
-            sendHTTP(new_socket, HTTPdata, strlen(buffer));
-
+            Checker(router);
+            printf("%s\n", router.c_str());
+            if(!fav) {
+                sendHTTP(new_socket, HTTPdata, strlen(buffer));
+                std::cout << bdata << "\n";
+            }
         }
         else if (c_recv == 0) {
             printf("connection closing...");
@@ -63,8 +69,6 @@ void Hlib::HTTP::Listen() {
         }
 
     }
-
-
     // shutdown socket
     ShutDown(c_socket,new_socket);
 }
@@ -80,15 +84,23 @@ int Hlib::HTTP::recvHTTP() {
 }
 
 void Hlib::HTTP::sendHTTP(int sock, char *buff, size_t len, int flag) {
-    c_send = send(sock , buff, len, flag);
+    if (router == "/favicon.ico") {
+        printf("FAVICON OMITTED\n");
+        bdata = EMPTY;
+    }
+    else {
+        c_send = send(sock, buff, len, flag);
+    }
     if(c_send == SOCKET_ERROR){
         printf("c_result shutdown failed: %d\n", WSAGetLastError());
         closesocket(c_socket);
         WSACleanup();
         exit(EXIT_FAILURE);
     }
-  //  printf("sent -> %s\n", buff);
+
 }
+  //  printf("sent -> %s\n", buff);
+
 
 int Hlib::HTTP::sendHTTP() {
     return c_send;
@@ -113,25 +125,32 @@ void Hlib::HTTP::parseData(std::string buff) {
         data = data + buff[i];
     }
     data = data + " ";
-    std::string method;
-    std::string fileName;
     std::vector<std::string> dataArray;
     for(int i = 0; i < data.size(); i++) {
         dataindex = data.size();
         if (data[i] != ' ') {
-            method = method + data[i];
-        } else if (data[i] == ' ') {
-            dataArray.push_back(method);
-            method = EMPTY;
+            str = str + data[i];
+        }
+        else if (data[i] == ' ') {
+            dataArray.push_back(str);
+            str = EMPTY;
         }
     }
-    std::cout << dataArray[0] << " " << dataArray[1] << " " << dataArray[2] << buff <<std::endl;
+//    std::cout << dataArray[0] << " " << dataArray[1] << " " << dataArray[2] << buff <<std::endl;
     method = dataArray[0];
-    fileName = dataArray[1];
+    router = dataArray[1];
+    fav = false;
 
     data = EMPTY;
 }
-
+void Hlib::HTTP::Checker(std::string router){
+   if(routers.find(router) == routers.end()){
+       printf("404 NOT FOUND \n");
+   } else {
+      std::cout << routers[router][0] << " " <<routers[router][1] << "\n";
+      bdata = routers[router][1].c_str();
+   }
+}
 // create socket SOCK() func
 Hlib::HTTP::HTTP() {
     // winsock init
