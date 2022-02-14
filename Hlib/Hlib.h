@@ -17,6 +17,8 @@
 #include <unordered_map>
 #pragma comment(lib, "Ws2_32.lib")
 
+#define EMPTY ""
+
 namespace Hlib{
 
     enum IPv {
