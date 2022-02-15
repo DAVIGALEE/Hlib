@@ -4,22 +4,12 @@
 
 #include <iostream>
 #include "Hlib.h"
-#include <string>
-#include <vector>
+
 using namespace Hlib;
 
 int main() {
-    HTTP app;
 
-    app.createServer(IPv4, SOCK_STREAM, IPPROTO_TCP, 8080);
-
-    // app.dir(join.dir("public"))
-
-    app.Get("/About/profile");
-    // app.Post('/users', callbacks);
-    // hash map [re]
-
-    app.Listen();
+    Sock app(Hlib::IPv4, SOCK_STREAM, IPPROTO_TCP, 8080);
 
     return 0;
 }
