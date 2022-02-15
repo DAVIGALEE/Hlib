@@ -8,7 +8,6 @@ int Hlib::HTTP::createServer(Hlib::IPv _ipv, int type, int protocol, int port) {
     } else if (_ipv == IPv6) {
         __ip = AF_INET6;
     }
-
     s_socket = socket(__ip,type,protocol); // socket create
     ZeroMemory(&address, sizeof (address));
     address.sin_family = __ip; // IP version
@@ -22,9 +21,25 @@ int Hlib::HTTP::createServer(Hlib::IPv _ipv, int type, int protocol, int port) {
     return 1;
 }
 // Get() func
-void Hlib::HTTP::Get(std::string path) {
+void Hlib::HTTP::Get(std::string path, std::string res) {
     routers[path].push_back("Method: GET");
-    routers[path].push_back("<h1> hello </h1>");
+    routers[path].push_back(res);
+}
+
+std::string Hlib::res(std::string resdata, std::string status, std::string ct) {
+    std::string len = std::to_string(ct.length());
+    std::string blabla;
+    blabla = "HTTP/1.1 ";
+    blabla = blabla + status;
+    blabla = blabla + "\n";
+    blabla = blabla + ct;
+    blabla = blabla + "\n";
+    blabla = blabla + "Content-Length: ";
+    blabla = blabla + len;
+    blabla = blabla + "\n\n";
+    blabla = blabla + resdata;
+
+    return blabla;
 }
 
 void Hlib::HTTP::Listen() {
@@ -52,24 +67,19 @@ void Hlib::HTTP::Listen() {
             Checker(router);
             printf("%s\n", router.c_str());
             if(!fav) {
-                sendHTTP(new_socket, HTTPdata, strlen(buffer));
+                sendHTTP(new_socket, buffHT, strlen(buffer));
                 std::cout << bdata << "\n";
             }
         }
         else if (c_recv == 0) {
             printf("connection closing...");
-            run = false;
         } else {
-            printf("recv failed: %d\n", WSAGetLastError());
             closesocket(new_socket);
-            WSACleanup();
-            run = false;
-            exit(EXIT_FAILURE);
         }
-
     }
     // shutdown socket
     ShutDown(c_socket,new_socket);
+    run = false;
 }
 
 void Hlib::HTTP::recvHTTP(int sock, char *buff, size_t len, int flag) {
@@ -95,7 +105,6 @@ void Hlib::HTTP::sendHTTP(int sock, char *buff, size_t len, int flag) {
         WSACleanup();
         exit(EXIT_FAILURE);
     }
-
 }
 
 int Hlib::HTTP::sendHTTP() {
@@ -133,20 +142,20 @@ void Hlib::HTTP::parseData(std::string buff) {
             str = EMPTY;
         }
     }
-
     method = dataArray[0];
     router = dataArray[1];
     fav = false;
-
     data = EMPTY;
 }
 // check routers 
 void Hlib::HTTP::Checker(std::string router){
    if(routers.find(router) == routers.end()){
        printf("404 NOT FOUND \n");
+       buffHT = "404 NOT FOUND :C";
    } else {
       std::cout << routers[router][0] << " " <<routers[router][1] << "\n";
       bdata = routers[router][1].c_str();
+      buffHT = routers[router][1].data();
    }
 }
 // create socket SOCK() func
