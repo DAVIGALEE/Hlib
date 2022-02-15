@@ -155,7 +155,7 @@ void Hlib::HTTP::Checker(std::string router){
    } else {
       std::cout << routers[router][0] << " " <<routers[router][1] << "\n";
       bdata = routers[router][1].c_str();
-      buffHT = routers[router][1].data();
+      buffHT = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 38\n\n<centre><p>NOT FOUND :C </p></centre>";
    }
 }
 // create socket SOCK() func
