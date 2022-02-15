@@ -28,18 +28,10 @@ void Hlib::HTTP::Get(std::string path, std::string res) {
 
 std::string Hlib::res(std::string resdata, std::string status, std::string ct) {
     std::string len = std::to_string(resdata.length());
-    std::string blabla;
-    blabla = "HTTP/1.1 ";
-    blabla = blabla + status;
-    blabla = blabla + "\n";
-    blabla = blabla + ct;
-    blabla = blabla + "\n";
-    blabla = blabla + "Content-Length: ";
-    blabla = blabla + len;
-    blabla = blabla + "\n\n";
-    blabla = blabla + resdata;
+    std::string resDATA;
+    resDATA = "HTTP/1.1 " + status + "\n" + ct + "\n" + "Content-Length: " + len + "\n\n" + resdata;
 
-    return blabla;
+    return resDATA;
 }
 
 void Hlib::HTTP::Listen() {
