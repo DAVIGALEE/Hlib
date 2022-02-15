@@ -27,7 +27,7 @@ void Hlib::HTTP::Get(std::string path, std::string res) {
 }
 
 std::string Hlib::res(std::string resdata, std::string status, std::string ct) {
-    std::string len = std::to_string(ct.length());
+    std::string len = std::to_string(resdata.length());
     std::string blabla;
     blabla = "HTTP/1.1 ";
     blabla = blabla + status;
