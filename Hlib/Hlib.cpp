@@ -151,8 +151,8 @@ void Hlib::HTTP::Checker(std::string router){
         buffHT = "HTTP/1.1 404 Bad Request\nContent-Type: text/html\nContent-Length: 38\n\n<center><h1>404 NOT FOUND </h1></center>";
     } else {
 
-        bdata = routers[router][2].c_str();
-        buffHT = routers[router][2].data();
+        bdata = routers[router][1].c_str();
+        buffHT = routers[router][1].data();
         //std::cout << " bff" <<buffHT << "\n";
     }
 }
