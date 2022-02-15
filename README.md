@@ -2,6 +2,6 @@
 <br>
 <br>
 <p>
-  <h2 align="left"> Docs 📔 </h2>
+  <h2 align="center"> Docs 📔 </h2>
   <p align="center"> Coming soon... </p>
 </p>
