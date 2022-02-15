@@ -13,12 +13,11 @@ int main() {
 
     app.createServer(IPv4, SOCK_STREAM, IPPROTO_TCP, 8080);
 
-    // app.dir(join.dir("public"));
+    // app.dir(join.dir("public"))
 
-    app.Get("/", res("<h1> default / route </h1>"));
-    app.Get("/home", res("<h1> /home route </h1>"));
-
+    app.Get("/About/profile");
     // app.Post('/users', callbacks);
+    // hash map [re]
 
     app.Listen();
 
