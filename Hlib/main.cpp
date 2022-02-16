@@ -4,8 +4,7 @@
 
 #include <iostream>
 #include "Hlib.h"
-#include <string>
-#include <vector>
+
 using namespace Hlib;
 
 int main() {
