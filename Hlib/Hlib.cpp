@@ -22,15 +22,25 @@ int Hlib::HTTP::createServer(Hlib::IPv _ipv, int type, int protocol, int port) {
 }
 // Get() func
 void Hlib::HTTP::Get(std::string path, std::string res) {
-    routers[path].push_back("Method: GET");
-    routers[path].push_back(res);
-
+    routers["GET " + path].push_back("Method: GET");
+    routers["GET " + path].push_back(res);
 }
 // Put() func
+void Hlib::HTTP::Post(std::string path, std::string res) {
+    routers["POST " + path].push_back("Method: POST");
+    routers["POST " + path].push_back(res);
+}
+
+void Hlib::HTTP::_Delete(std::string path, std::string res) {
+    routers["DELETE " + path].push_back("Method: POST");
+    routers["DELETE " + path].push_back(res);
+}
+
 void Hlib::HTTP::Put(std::string path, std::string res) {
-    routers[path].push_back("Method: GET");
-    routers[path].push_back(res);
-};
+    routers["PUT " + path].push_back("Method: POST");
+    routers["PUT " + path].push_back(res);
+}
+
 std::string Hlib::res(std::string resdata, std::string status, std::string ct) {
     std::string len = std::to_string(resdata.length());
     std::string resDATA;
@@ -60,6 +70,7 @@ void Hlib::HTTP::Listen() {
         recvHTTP(new_socket, buffer, 30000);
         if (c_recv > 0 ) {
             //sending response
+            printf("%s\n", buffer);
             Checker(router);
             printf("%s\n", router.c_str());
             if(!fav) {
@@ -140,19 +151,34 @@ void Hlib::HTTP::parseData(std::string buff) {
     }
     method = dataArray[0];
     router = dataArray[1];
+    printf("%s\n",router.c_str());
     fav = false;
     data = EMPTY;
 }
+
+void Hlib::HTTP::parsePost(std::string path) {
+
+}
+
 // check routers
 void Hlib::HTTP::Checker(std::string router){
-
-    if(routers.find(router) == routers.end()){
+    if(routers.find(method + " " + router) == routers.end()){
         printf("404 NOT FOUND \n");
         buffHT = "HTTP/1.1 404 Bad Request\nContent-Type: text/html\nContent-Length: 38\n\n<center><h1>404 NOT FOUND </h1></center>";
     } else {
-
-        bdata = routers[router][1].c_str();
-        buffHT = routers[router][1].data();
+        if (method == "GET") {
+            bdata = routers["GET " + router][1].c_str();
+            buffHT = routers["GET " + router][1].data();
+        } else if (method == "POST") {
+            bdata = routers["POST " + router][1].c_str();
+            buffHT = routers["POST " + router][1].data();
+        } else if (method == "PUT") {
+            bdata = routers["PUT " + router][1].c_str();
+            buffHT = routers["PUT " + router][1].data();
+        } else if (method == "DELETE") {
+            bdata = routers["DELETE " + router][1].c_str();
+            buffHT = routers["DELETE " + router][1].data();
+        }
         //std::cout << " bff" <<buffHT << "\n";
     }
 }
