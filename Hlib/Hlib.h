@@ -8,6 +8,7 @@
 #endif
 
 #include <iostream>
+#include <fstream>
 #include <winsock2.h>
 #include <iphlpapi.h>
 #include <WS2tcpip.h>
@@ -45,6 +46,8 @@ namespace Hlib {
         SOCKET s_socket;
         SOCKET c_socket;
         WSADATA wsaData;
+
+        std::ifstream read;
         std::string mapp;
         std::string str;
         std::string method;
@@ -69,12 +72,14 @@ namespace Hlib {
         bool run;
         bool fav;
 
+        void parsePost(std::string path);
         void recvHTTP(int sock, char *buff, size_t len, int flag = 0);
         void parseData(std::string buff);
         void sendHTTP(int sock, char *buff, size_t len, int flag = 0);
 
         const char* s_ipAddress;
         const char *bdata;
+
         char *buffHT;
         char recvbuf[512];
         char *local = "127.0.0.1";
@@ -92,7 +97,8 @@ namespace Hlib {
         void Get(std::string path, std::string res);
         void Post(std::string path, std::string res);
         void Put(std::string path, std::string res);
-        void _Delete(std::string path, void callBack());
+        void _Delete(std::string path, std::string res);
+        void File(std::string path);
     };
 }
 
