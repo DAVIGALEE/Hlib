@@ -20,6 +20,19 @@ int Hlib::HTTP::createServer(Hlib::IPv _ipv, int type, int protocol, int port) {
     }
     return 1;
 }
+
+std::string Hlib::HTTP::File(std::string path) {
+    _file = EMPTY;
+    read.open(path);
+    if (read.is_open()) {
+        while (std::getline(read, line)) {
+            _file = _file + line + "\n";
+        }
+        read.close();
+    }
+    return _file;
+}
+
 // Get() func
 void Hlib::HTTP::Get(std::string path, std::string res) {
     routers["GET " + path].push_back("Method: GET");

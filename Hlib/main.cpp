@@ -28,9 +28,10 @@ int main() {
                          "    <button>Send my greetings</button>\n"
                          "  </div>\n"
                          "</form>"));
+
     app.Post("/home", res("<h1> /home </h1>"));
 
-    app.Get("/", res("<h1> /def route </h1>"));
+    app.Get("/", res(app.File("D:\\GitHub\\Hlib\\example\\index.html")));
 
     // app.Post('/users', callbacks);
 

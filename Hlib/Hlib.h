@@ -48,6 +48,9 @@ namespace Hlib {
         WSADATA wsaData;
 
         std::ifstream read;
+
+        std::string line;
+        std::string _file;
         std::string mapp;
         std::string str;
         std::string method;
@@ -91,6 +94,7 @@ namespace Hlib {
     public:
         HTTP();
         int createServer(IPv _ipv, int type, int protocol, int port);
+
         void ShutDown(int c_sock, int s_sock, int exit_code = SD_SEND);
         void Listen();
         void Checker(std::string method);
@@ -98,7 +102,8 @@ namespace Hlib {
         void Post(std::string path, std::string res);
         void Put(std::string path, std::string res);
         void _Delete(std::string path, std::string res);
-        void File(std::string path);
+
+        std::string File(std::string path);
     };
 }
 
