@@ -11,6 +11,8 @@
 #include <fstream>
 #include <winsock2.h>
 #include <iphlpapi.h>
+#include <winsock.h>
+#include <ws2tcpip.h>
 #include <WS2tcpip.h>
 #include <windows.h>
 #include <vector>
@@ -42,10 +44,13 @@ namespace Hlib {
     class HTTP {
 
     private:
-        struct sockaddr_in address;
-        SOCKET s_socket;
-        SOCKET c_socket;
-        WSADATA wsaData;
+        #ifdef _WIN32
+            struct sockaddr_in address;
+            SOCKET s_socket;
+            SOCKET c_socket;
+            WSADATA wsaData;
+            PCSTR localhost = "127.0.0.1";
+        #endif
 
         std::ifstream read;
 
@@ -78,14 +83,15 @@ namespace Hlib {
         void parsePost(std::string path);
         void recvHTTP(int sock, char *buff, size_t len, int flag = 0);
         void parseData(std::string buff);
-        void sendHTTP(int sock, char *buff, size_t len, int flag = 0);
+        void sendHTTP(int sock, char const *buff, size_t len, int flag = 0);
 
         const char* s_ipAddress;
         const char *bdata;
+               
 
-        char *buffHT;
+        const char *buffHT;
         char recvbuf[512];
-        char *local = "127.0.0.1";
+        std::string local = "127.0.0.1";
         char *HTTPdata="HTTP/1.1 , std::string stutus\nContent-Type: text/html\nContent-Length: 30\n\n<h1> Hello world! </h1>";
         char buffer[30000] = {0};
 

@@ -9,10 +9,10 @@ int Hlib::HTTP::createServer(Hlib::IPv _ipv, int type, int protocol, int port) {
         __ip = AF_INET6;
     }
     s_socket = socket(__ip,type,protocol); // socket create
-    ZeroMemory(&address, sizeof (address));
+    memset(&address, 0, sizeof(address));
     address.sin_family = __ip; // IP version
     address.sin_port = htons(port); // Port
-    inet_pton(__ip, local,&address.sin_addr); // converting IP address in bytes
+    inet_pton(__ip, localhost, &address.sin_addr); // converting IP address in bytes
     // bind stuff to socket
     if(bind(s_socket,(sockaddr*)&address,sizeof(address)) == SOCKET_ERROR){
         printf("BIND ERROR");
@@ -111,7 +111,7 @@ int Hlib::HTTP::recvHTTP() {
     return c_recv;
 }
 
-void Hlib::HTTP::sendHTTP(int sock, char *buff, size_t len, int flag) {
+void Hlib::HTTP::sendHTTP(int sock, char const *buff, size_t len, int flag) {
     if (router == "/favicon.ico") {
         printf("FAVICON OMITTED\n");
         bdata = EMPTY;
@@ -132,15 +132,15 @@ int Hlib::HTTP::sendHTTP() {
 }
 // shutdown socket
 void Hlib::HTTP::ShutDown(int c_sock,  int s_sock, int exit_code) {
-    c_send = shutdown(c_sock, exit_code);
-    if(c_send == SOCKET_ERROR) {
-        printf("shutdown failed: %d\n", WSAGetLastError());
-        closesocket(c_sock);
+        c_send = shutdown(c_sock, exit_code);
+        if(c_send == SOCKET_ERROR) {
+            printf("shutdown failed: %d\n", WSAGetLastError());
+            closesocket(c_sock);
+            WSACleanup();
+            exit(EXIT_FAILURE);
+        }
+        closesocket(s_sock);
         WSACleanup();
-        exit(EXIT_FAILURE);
-    }
-    closesocket(s_sock);
-    WSACleanup();
 }
 // parse buff
 void Hlib::HTTP::parseData(std::string buff) {
@@ -198,10 +198,11 @@ void Hlib::HTTP::Checker(std::string router){
 // create socket SOCK() func
 Hlib::HTTP::HTTP() {
     // winsock init
-    WORD ver = MAKEWORD(2,2);
-    _result = WSAStartup(ver, &wsaData);
-    if (_result != 0) {
-        printf("WSAStartup failed: %d\n", _result);
-        exit(EXIT_FAILURE);
-    }
+        WORD ver = MAKEWORD(2,2);
+        _result = WSAStartup(ver, &wsaData);
+        if (_result != 0) {
+            printf("WSAStartup failed: %d\n", _result);
+            exit(EXIT_FAILURE);
+        }
+        printf("WIN32 \n");
 }
