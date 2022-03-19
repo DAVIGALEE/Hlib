@@ -6,6 +6,8 @@
   <h2 align="center"> Docs 📔 </h2>
 </p>
 
+<p align="left">Compile: </p>
+
 ```bash
  g++ -std=c++17 main.cpp Hlib.cpp -lws2_32
 ```
