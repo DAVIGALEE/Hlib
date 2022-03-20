@@ -9,5 +9,5 @@
 <p align="left">Compile: </p>
 
 ```bash
- g++ -std=c++17 main.cpp Hlib.cpp -lws2_32
+ g++ main.cpp Hlib.cpp -lws2_32
 ```
