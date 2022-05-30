@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Hlib.h"
 
 int Hlib::HTTP::createServer(Hlib::IPv _ipv, int type, int protocol, int port) {
