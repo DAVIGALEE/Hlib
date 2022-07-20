@@ -7,16 +7,18 @@ int Hlib::HTTP::createServer(Hlib::IPv _ipv, int type, int protocol, int port) {
     } else if (_ipv == IPv6) {
         __ip = AF_INET6;
     }
-    s_socket = socket(__ip,type,protocol); // socket create
+    s_socket = socket(__ip, type, protocol); // socket create
     memset(&address, 0, sizeof(address));
     address.sin_family = __ip; // IP version
+    address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(port); // Port
-    inet_pton(__ip, localhost, &address.sin_addr); // converting IP address in bytes
+    inet_pton(__ip, local, &address.sin_addr); // converting IP address in bytes
     // bind stuff to socket
-    if(bind(s_socket,(sockaddr*)&address,sizeof(address)) == SOCKET_ERROR){
+    if(bind(s_socket, (struct sockaddr *)&address, sizeof(address)) < 0){
         printf("BIND ERROR");
         return 0;
     }
+    printf("bind done");
     return 1;
 }
 
@@ -44,12 +46,12 @@ void Hlib::HTTP::Post(std::string path, std::string res) {
 }
 
 void Hlib::HTTP::_Delete(std::string path, std::string res) {
-    routers["DELETE " + path].push_back("Method: POST");
+    routers["DELETE " + path].push_back("Method: DELETE");
     routers["DELETE " + path].push_back(res);
 }
 
 void Hlib::HTTP::Put(std::string path, std::string res) {
-    routers["PUT " + path].push_back("Method: POST");
+    routers["PUT " + path].push_back("Method: PUT");
     routers["PUT " + path].push_back(res);
 }
 
@@ -61,10 +63,14 @@ std::string Hlib::res(std::string resdata, std::string status, std::string ct) {
 }
 
 void Hlib::HTTP::Listen() {
-    if (listen(s_socket, SOMAXCONN) == SOCKET_ERROR) {
-        exit(WSAGetLastError());
+    if (listen(s_socket, SOMAXCONN) < 0) {
+        #ifdef _WIN32
+            exit(WSAGetLastError());
+        #else
+            exit(0);
+        #endif
     }
-    c_socket = INVALID_SOCKET;
+    c_socket = 0;
     // socket is ready to listen incoming connections
     run = true;
     fav = false;
@@ -93,11 +99,15 @@ void Hlib::HTTP::Listen() {
         else if (c_recv == 0) {
             printf("connection closing...");
         } else {
-            closesocket(new_socket);
+            #ifdef _WIN32
+                closesocket(new_socket);
+            #else
+                close(new_socket);
+            #endif
         }
     }
     // shutdown socket
-    ShutDown(c_socket,new_socket);
+    ShutDown(c_socket,new_socket,0);
     run = false;
 }
 
@@ -118,11 +128,15 @@ void Hlib::HTTP::sendHTTP(int sock, char const *buff, size_t len, int flag) {
     else {
         c_send = send(sock, buff, len, flag);
     }
-    if(c_send == SOCKET_ERROR){
-        printf("c_result shutdown failed: %d\n", WSAGetLastError());
-        closesocket(c_socket);
-        WSACleanup();
-        exit(EXIT_FAILURE);
+    if(c_send == 0){
+        #ifdef _WIN32
+            printf("c_result shutdown failed: %d\n", WSAGetLastError());
+            closesocket(c_socket);
+            WSACleanup();
+            exit(EXIT_FAILURE);
+        #else
+            exit(0);
+        #endif
     }
 }
 
@@ -131,6 +145,7 @@ int Hlib::HTTP::sendHTTP() {
 }
 // shutdown socket
 void Hlib::HTTP::ShutDown(int c_sock,  int s_sock, int exit_code) {
+    #ifdef _WIN32
         c_send = shutdown(c_sock, exit_code);
         if(c_send == SOCKET_ERROR) {
             printf("shutdown failed: %d\n", WSAGetLastError());
@@ -140,6 +155,7 @@ void Hlib::HTTP::ShutDown(int c_sock,  int s_sock, int exit_code) {
         }
         closesocket(s_sock);
         WSACleanup();
+    #endif
 }
 // parse buff
 void Hlib::HTTP::parseData(std::string buff) {
@@ -167,11 +183,6 @@ void Hlib::HTTP::parseData(std::string buff) {
     fav = false;
     data = EMPTY;
 }
-
-void Hlib::HTTP::parsePost(std::string path) {
-
-}
-
 // check routers
 void Hlib::HTTP::Checker(std::string router){
     if(routers.find(method + " " + router) == routers.end()){
@@ -196,6 +207,7 @@ void Hlib::HTTP::Checker(std::string router){
 }
 // create socket SOCK() func
 Hlib::HTTP::HTTP() {
+    #ifdef _WIN32
     // winsock init
         WORD ver = MAKEWORD(2,2);
         _result = WSAStartup(ver, &wsaData);
@@ -204,4 +216,5 @@ Hlib::HTTP::HTTP() {
             exit(EXIT_FAILURE);
         }
         printf("WIN32 \n");
+    #endif
 }

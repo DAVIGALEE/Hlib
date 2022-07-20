@@ -9,12 +9,19 @@
 
 #include <iostream>
 #include <fstream>
-#include <winsock2.h>
-#include <iphlpapi.h>
-#include <winsock.h>
-#include <ws2tcpip.h>
-#include <WS2tcpip.h>
-#include <windows.h>
+#ifdef _WIN32
+    #include <winsock2.h>
+    #include <iphlpapi.h>
+    #include <winsock.h>
+    #include <ws2tcpip.h>
+    #include <WS2tcpip.h>
+    #include <windows.h>
+#else
+    #include <string.h>	//strlen
+    #include <sys/socket.h>
+    #include <arpa/inet.h>
+    #include <unistd.h>
+#endif
 #include <vector>
 #include <unordered_map>
 
@@ -50,6 +57,10 @@ namespace Hlib {
             SOCKET c_socket;
             WSADATA wsaData;
             PCSTR localhost = "127.0.0.1";
+        #else 
+            int s_socket;
+            int c_socket;
+            struct sockaddr_in address;
         #endif
 
         std::ifstream read;
@@ -91,7 +102,7 @@ namespace Hlib {
 
         const char *buffHT;
         char recvbuf[512];
-        std::string local = "127.0.0.1";
+        char *local = "127.0.0.1";
         char *HTTPdata="HTTP/1.1 , std::string stutus\nContent-Type: text/html\nContent-Length: 30\n\n<h1> Hello world! </h1>";
         char buffer[30000] = {0};
 
@@ -100,8 +111,12 @@ namespace Hlib {
     public:
         HTTP();
         int createServer(IPv _ipv, int type, int protocol, int port);
-
-        void ShutDown(int c_sock, int s_sock, int exit_code = SD_SEND);
+        
+        #ifdef _WIN32
+            void ShutDown(int c_sock, int s_sock, int exit_code = SD_SEND);
+        #else
+            void ShutDown(int c_sock,  int s_sock, int exit_code);
+        #endif
         void Listen();
         void Checker(std::string method);
         void Get(std::string path, std::string res);

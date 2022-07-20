@@ -27,7 +27,7 @@ int main() {
 
     app.Post("/home", res("<h1> /home </h1>"));
 
-    app.Get("/", res(app.File("D:\\GitHub\\Hlib\\example\\index.html")));
+    app.Get("/", res(app.File("../example/index.html")));
 
     // app.Post('/users', callbacks);
 
